@@ -87,6 +87,10 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    # Run the built exe
+    - name: Run exe
+      run: amoeba.exe models
+
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     #- name: Decode the pfx
     #  run: |
