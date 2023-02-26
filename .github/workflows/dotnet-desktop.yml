@@ -89,6 +89,8 @@ jobs:
 
     - name: build
       run: dotnet build -c $env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     # Run the built exe
     - name: Run exe
