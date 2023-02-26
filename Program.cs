@@ -30,4 +30,4 @@ catch(Exception)
 }
 
 Saver s = new();
-s.Save(gamer._q._table._stateAction, "3_3.model");
+s.Save(gamer._q._table._stateAction, args[0] + "\\3_3.model");
