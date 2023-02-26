@@ -87,12 +87,14 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    - name: list
-      run: dotnet build -c $env:Configuration | gci
+    - name: build
+      run: dotnet build -c $env:Configuration
 
     # Run the built exe
     - name: Run exe
-      run: dotnet amoeba.dll models
+      run: |
+        gci
+        dotnet amoeba.dll models
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     #- name: Decode the pfx
