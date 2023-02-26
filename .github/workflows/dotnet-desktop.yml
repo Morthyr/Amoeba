@@ -87,6 +87,9 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    - name: list
+      run: gci
+
     # Run the built exe
     - name: Run exe
       run: dotnet amoeba.dll models
