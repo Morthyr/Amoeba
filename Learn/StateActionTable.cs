@@ -9,7 +9,7 @@ class StateActionTable
     {
         lock(_lockObj)
         {
-            int r = 0;
+            double r = sa.State[sa.Action.X, sa.Action.Y].HasValue ? 0.0 : 0.0001;
             if(!_stateAction.ContainsKey(sa))
             {
                 if(!_stateAction.TryAdd(sa, r))
@@ -25,7 +25,7 @@ class StateActionTable
     {
         get 
         {
-            StateAction sa = new() { State = (bool?[,])state.Clone(), Action = action };
+            StateAction sa = new() { State = (bool?[,])state.Clone(), Action = new() { X = action.X, Y = action.Y } };
             if(!_stateAction.ContainsKey(sa))
             {
                 return Create(sa);
@@ -34,7 +34,7 @@ class StateActionTable
         }
         set 
         {
-            StateAction sa = new() { State = (bool?[,])state.Clone(), Action = action };
+            StateAction sa = new() { State = (bool?[,])state.Clone(), Action = new() { X = action.X, Y = action.Y } };
             if(!_stateAction.ContainsKey(sa))
             {
                 Create(sa);

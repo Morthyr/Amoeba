@@ -10,14 +10,13 @@ class Q
     Gamer _gamer;
     A[] _actions;
 
-    public double Eps { get; set; }
+    public double Eps { get; set; } = 1.0;
     
     public Q(Gamer gamer, StateActionTable table, A[] actions)
     {
         _table = table;
         _gamer = gamer;
         _actions = actions;
-        Eps = 1.0;
     }
 
     public A Select(bool?[,] obs)
@@ -41,7 +40,7 @@ class Q
         return _actions.Max(a => _table[obs, a]);
     }
 
-    public void Learn(bool?[,] obs0, bool?[,] obs1, int reward, A action, bool done)
+    public void Learn(bool?[,] obs0, bool?[,] obs1, double reward, A action, bool done)
     {
         double best = reward;
         if(!done)

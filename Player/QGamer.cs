@@ -6,6 +6,8 @@ namespace Player;
 class QGamer : Gamer
 {
     internal Q _q;
+    const double _eps_decay = 0.9995;
+    private double _eps = 1.0;
 
     protected override void StartGame(int tableSize, int serieLength, bool first)
     {
@@ -21,6 +23,8 @@ class QGamer : Gamer
         }
 
         _q = new Q(this, table, actions.ToArray());
+        _eps *= _eps_decay;
+        _q.Eps = _eps;
     }
     
     A _action;
@@ -43,9 +47,15 @@ class QGamer : Gamer
         _q.Learn(obs0, obs1, reward, _action, Env.Done);
     }
 
-    int CalculateReward()
+    double CalculateReward()
     {
-        return Env.Done ? Env.Scores[this] : 0;
+        if(!Env.Done)
+            return 0;
+
+        double myscore = Env.Scores[this];
+        if(myscore > 0)
+            return myscore;
+        return myscore;
     }
 
     public override Point PlaceMark(Point mark, ReadOnlyCollection<Point> marks)
