@@ -96,7 +96,9 @@ jobs:
     - name: Run exe
       run: |
         gci
-        dotnet amoeba.dll models
+        dotnet bin\$env:Configuration\net6.0\Amoeba.dll models
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     #- name: Decode the pfx
