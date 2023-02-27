@@ -3,10 +3,13 @@
 Env env = new();
 QGamer gamer = new();
 RandomGamer enemy = new();
-
-int tableSize = 7;
-int serieLength = 3;
 Dictionary<Gamer, int> scores = new();
+
+int tableSize = int.Parse(args[0]);
+int serieLength = int.Parse(args[1]);
+string dir = string.Empty;
+if(args.Length > 2)
+    dir = args[2] + "\\";
 
 try
 {
@@ -30,8 +33,4 @@ catch(Exception)
 }
 
 Saver s = new();
-string dir = string.Empty;
-if(args.Length > 0)
-    dir = args[0] + "\\";
-    
 s.Save(gamer._table._stateAction, dir + $"{tableSize}_{serieLength}.model");
