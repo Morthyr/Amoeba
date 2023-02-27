@@ -4,13 +4,13 @@ Env env = new();
 QGamer gamer = new();
 RandomGamer enemy = new();
 
-int tableSize = 3;
+int tableSize = 7;
 int serieLength = 3;
 Dictionary<Gamer, int> scores = new();
 
 try
 {
-    int cycles = 10000;
+    int cycles = 100000;
     int cycle = 0;
     while(cycle++ < cycles)
     {
@@ -30,8 +30,8 @@ catch(Exception)
 }
 
 Saver s = new();
-string dir = "\\";
+string dir = string.Empty;
 if(args.Length > 0)
-    dir = args[0] + dir;
+    dir = args[0] + "\\";
     
-s.Save(gamer._q._table._stateAction, dir + "3_3.model");
+s.Save(gamer._table._stateAction, dir + $"{tableSize}_{serieLength}.model");

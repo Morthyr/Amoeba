@@ -5,13 +5,16 @@ using Learn;
 namespace Player;
 class QGamer : Gamer
 {
-    internal Q _q;
-    const double _eps_decay = 0.9995;
+    Q _q;
+    const double _eps_decay = 0.999995;
     private double _eps = 1.0;
+    internal StateActionTable _table;
 
     protected override void StartGame(int tableSize, int serieLength, bool first)
     {
-        StateActionTable table = new();
+        if(_table == null)
+            _table = new();
+
         List<A> actions = new List<A>(tableSize * tableSize);
         
         for(int y = 0; y < tableSize; y++)
@@ -22,7 +25,7 @@ class QGamer : Gamer
             }
         }
 
-        _q = new Q(this, table, actions.ToArray());
+        _q = new Q(this, _table, actions.ToArray());
         _eps *= _eps_decay;
         _q.Eps = _eps;
     }
@@ -45,6 +48,21 @@ class QGamer : Gamer
 
         var reward = CalculateReward();
         _q.Learn(obs0, obs1, reward, _action, Env.Done);
+    }
+
+    double CalculateReward1()
+    {
+        double score = 0.0;
+        if(Env._turn > 0)
+        {
+            score = 1 / (Env._turn + 1);
+        }
+        
+        if(!Env.Done)
+            return score;
+
+        double myscore = Env.Scores[this] * score;
+        return myscore;
     }
 
     double CalculateReward()

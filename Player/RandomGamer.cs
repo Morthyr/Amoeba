@@ -24,7 +24,7 @@ class RandomGamer : Gamer
         }
 
         var avail = all.Except(marks).ToArray();
-        return avail[_r.Next(0, avail.Length)];
+        return avail[_r.Next(avail.Length)];
     }
 
 }

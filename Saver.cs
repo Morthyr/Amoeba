@@ -2,45 +2,28 @@ using System.Drawing;
 
 class Saver
 {
-    internal static string StateToString(bool?[,] state) => new string(state.Cast<bool?>().Select(c => c switch
-    {
-        true => 'x',
-        false => 'o',
-        _ => '.'
-    }).ToArray());
+    internal static string StateToString(bool?[,] state) => Learn.StateAction.StateToString(state);
 
     static bool?[,] StringToState(string stateString)
     {
         int tableSize = (int)Math.Sqrt(stateString.Length);
         bool?[,] table = new bool?[tableSize, tableSize];
-        var values = stateString.Select<char, bool?>(c => c switch
-        {
-            'x' => true,
-            'o' => false,
-            _ => null
-        }).ToList();
 
-        for(int i = 0; i < stateString.Length; i++)
+        int idx = 0;
+        for(int y = 0; y < tableSize; y++)
         {
-            table[i % tableSize, i / tableSize] = values[i];
+            for(int x = 0; x < tableSize; x++)
+            {
+                table[x,y] = stateString[idx++] switch
+                {
+                    'x' => true,
+                    'o' => false,
+                    _ => null
+                };
+            }
         }
-
         return table;
     }
-
-    static double[] StateToValues(bool?[,] state) => state.Cast<bool?>().Select(c => c switch
-    {
-        true => 1.0,
-        false => -1.0,
-        _ => 0
-    }).ToArray();
-
-    static double[] StringToValues(string stateString) => stateString.Select(c => c switch
-    {
-        'x' => 1.0,
-        'o' => -1.0,
-        _ => 0
-    }).ToArray();
 
     public void Save(Dictionary<Learn.StateAction, double> data, string file)
     {

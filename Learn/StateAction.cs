@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Text;
 
 namespace Learn;
 class StateAction : IEquatable<StateAction>
@@ -26,10 +27,23 @@ class StateAction : IEquatable<StateAction>
         return StateToString(State).GetHashCode() + ((Point)Action).GetHashCode();
     }
 
-    public static string StateToString(bool?[,] state) => new string(state.Cast<bool?>().Select(c => c switch
+    public static string StateToString(bool?[,] state)
     {
-        true => 'x',
-        false => 'o',
-        _ => '.'
-    }).ToArray());
+        int size = state.GetLength(0);
+        StringBuilder builder = new();
+
+        for(int y = 0; y < size; y++)
+        {
+            for(int x = 0; x < size; x++)
+            {
+                builder.Append(state[x, y] switch
+                {
+                    true => 'x',
+                    false => 'o',
+                    _ => '.'
+                });
+            }
+        }
+        return builder.ToString();
+    }
 }

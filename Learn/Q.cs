@@ -19,12 +19,18 @@ class Q
         _actions = actions;
     }
 
+    private A[] AvailableActions(bool?[,] obs)
+    {
+        return _actions.Where(a => !obs[a.X, a.Y].HasValue).ToArray();
+    }
+
     public A Select(bool?[,] obs)
     {
         A best = SelectBest(obs);
         if(_r.NextDouble() < Eps)
         {
             int idx = _r.Next(_actions.Length);
+            //Console.WriteLine("Q select random: {0}", idx);
             return _actions[idx];
         }
         return best;
@@ -32,12 +38,14 @@ class Q
 
     public A SelectBest(bool?[,] obs)
     {
-        return _actions.MaxBy(a => _table[obs, a]);
+        return AvailableActions(obs).MaxBy(a => _table[obs, a]);
+        //return _actions.MaxBy(a => _table[obs, a]);
     }
 
     public double SelectBestValue(bool?[,] obs)
     {
-        return _actions.Max(a => _table[obs, a]);
+        return AvailableActions(obs).Max(a => _table[obs, a]);
+        //return _actions.Max(a => _table[obs, a]);
     }
 
     public void Learn(bool?[,] obs0, bool?[,] obs1, double reward, A action, bool done)

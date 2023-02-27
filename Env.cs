@@ -8,7 +8,7 @@ class Env
     bool _first = true;
 
     Gamer[] _gamers;
-    int _turn;
+    internal int _turn;
     Point _mark;
     List<Point> _marks;
 
@@ -18,6 +18,7 @@ class Env
 
     public void StartGame(int tableSize, int serieLength, bool first, Gamer gamer, Gamer enemy, Dictionary<Gamer, int> scores)
     {
+        _turn = 0;
         _tableSize = tableSize;
         _serieLength = serieLength;
         _first = first;

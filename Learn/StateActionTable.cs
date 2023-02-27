@@ -9,7 +9,7 @@ class StateActionTable
     {
         lock(_lockObj)
         {
-            double r = sa.State[sa.Action.X, sa.Action.Y].HasValue ? 0.0 : 0.0001;
+            double r = sa.State[sa.Action.X, sa.Action.Y].HasValue ? double.MinValue : 0.0;
             if(!_stateAction.ContainsKey(sa))
             {
                 if(!_stateAction.TryAdd(sa, r))
