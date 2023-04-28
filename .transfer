@@ -1,115 +1,136 @@
-public int BestMove(int[,] board, int depth, int player, int alpha, int beta, CancellationToken token)
+public static int EvaluateBoard(char[,] board, char playerMark, int seriesLength)
 {
-    int winner = CheckWinner(board);
-    if (winner == 1) return int.MaxValue; // player wins
-    else if (winner == -1) return int.MinValue; // opponent wins
-    else if (winner == 2) return 0; // draw
+    int size = board.GetLength(0);
+    int playerScore = 0;
+    int opponentScore = 0;
 
-    if (depth == 0 || token.IsCancellationRequested)
-        return EvaluateBoard(board, player);
-
-    int bestScore = player == 1 ? int.MinValue : int.MaxValue;
-    int bestMove = -1;
-
-    for (int i = 0; i < board.GetLength(0); i++)
+    // Check unblocked rows
+    for (int i = 0; i < size; i++)
     {
-        for (int j = 0; j < board.GetLength(1); j++)
+        int playerMarks = 0;
+        int opponentMarks = 0;
+        bool blocked = false;
+
+        for (int j = 0; j < size; j++)
         {
-            if (board[i, j] == 0)
+            if (board[i, j] == playerMark)
             {
-                board[i, j] = player;
-                int score = BestMove(board, depth - 1, -player, alpha, beta, token);
-                board[i, j] = 0;
-                if (player == 1 && score > bestScore)
+                playerMarks++;
+                if (opponentMarks > 0)
                 {
-                    bestScore = score;
-                    bestMove = i;
+                    blocked = true;
+                    break;
                 }
-                else if (player == -1 && score < bestScore)
+            }
+            else if (board[i, j] != '\0')
+            {
+                opponentMarks++;
+                if (playerMarks < seriesLength)
                 {
-                    bestScore = score;
-                    bestMove = i;
+                    blocked = true;
+                    break;
                 }
-                if (player == 1) alpha = Math.Max(alpha, bestScore);
-                else beta = Math.Min(beta, bestScore);
-                if (beta <= alpha) break; // beta cutoff
             }
         }
-        if (token.IsCancellationRequested) break;
-    }
 
-    if (bestMove == -1) bestMove = 0;
-    return bestMove;
-}
-
-public int EvaluateBoard(int[,] board, int player)
-{
-    int score = 0;
-
-    // Evaluate rows
-    for (int i = 0; i < board.GetLength(0); i++)
-    {
-        for (int j = 0; j <= board.GetLength(1) - n; j++)
+        if (!blocked && playerMarks >= seriesLength)
         {
-            int count = 0;
-            for (int k = 0; k < n; k++)
-            {
-                if (board[i, j + k] == player) count++;
-                else if (board[i, j + k] == -player) count = 0;
-            }
-            score += count * count * count;
+            playerScore++;
         }
-    }
-
-    // Evaluate columns
-    for (int j = 0; j < board.GetLength(1); j++)
-    {
-        for (int i = 0; i <= board.GetLength(0) - n; i++)
+        else if (!blocked && opponentMarks >= seriesLength)
         {
-            int count = 0;
-            for (int k = 0; k < n; k++)
-            {
-                if (board[i + k, j] == player) count++;
-                else if (board[i + k, j] == -player) count = 0;
-            }
-            score += count * count * count;
+            opponentScore++;
         }
     }
 
-    // Evaluate diagonals
-    for (int i = 0; i <= board.GetLength(0) - n; i++)
+    // Check unblocked columns
+    for (int j = 0; j < size; j++)
     {
-        for (int j = 0; j <= board.GetLength(1) - n; j++)
+        int playerMarks = 0;
+        int opponentMarks = 0;
+        bool blocked = false;
+
+        for (int i = 0; i < size; i++)
         {
-            int count = 0;
-            for (int k = 0; k < n; k++)
+            if (board[i, j] == playerMark)
             {
-                if (board[i + k, j + k] == player) count++;
-                else if (board[i + k, j + k] == -player) count = 0;
+                playerMarks++;
+                if (opponentMarks > 0)
+                {
+                    blocked = true;
+                    break;
+                }
             }
-            score += count * count * count;
+            else if (board[i, j] != '\0')
+            {
+                opponentMarks++;
+                if (playerMarks < seriesLength)
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+        }
+
+        if (!blocked && playerMarks >= seriesLength)
+        {
+            playerScore++;
+        }
+        else if (!blocked && opponentMarks >= seriesLength)
+        {
+            opponentScore++;
         }
     }
 
-    for (int i = 0; i <= board.GetLength(0) - n; i++)
+    // Check unblocked diagonals
+    for (int i = 0; i <= size - seriesLength; i++)
     {
-        for (int j = n - 1; j < board.GetLength(1); j++)
+        for (int j = 0; j <= size - seriesLength; j++)
         {
-            int count = 0;
-            for (int k = 0; k < n; k++)
+            int playerMarks = 0;
+            int opponentMarks = 0;
+            bool blocked = false;
+
+            for (int k = 0; k < seriesLength; k++)
             {
-                if (board[i + k, j - k] == player) count++;
-                else if (board[i + k, j - k] == -player) count = 0;
+                if (board[i + k, j + k] == playerMark)
+                {
+                    playerMarks++;
+                    if (opponentMarks > 0)
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
+                else if (board[i + k, j + k] != '\0')
+                {
+                    opponentMarks++;
+                    if (playerMarks < seriesLength)
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
             }
-            score += count * count * count;
-        }
-    }
 
-    return score;
-}
+            if (!blocked && playerMarks >= seriesLength)
+            {
+                playerScore++;
+            }
+            else if (!blocked && opponentMarks >= seriesLength)
+            {
+                opponentScore++;
+            }
 
+            playerMarks = 0;
+            opponentMarks = 0;
+            blocked = false;
 
-public int CheckWinner(int[,] board)
-{
-    // Check if there is a winner and return the player who won
-}
+            for (int k = 0; k < seriesLength; k++)
+            {
+                if (board[i + k, j + seriesLength - 1 - k] == playerMark)
+                {
+                    playerMarks++;
+                    if (opponentMarks > 0)
+                    {
+                        blocked = true;
