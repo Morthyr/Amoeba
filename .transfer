@@ -1,65 +1,53 @@
-public static int Minimax(int[,] board, int depth, int alpha, int beta, bool isMaximizingPlayer, CancellationToken token)
+public int BestMove(int[,] board, int depth, int player, int alpha, int beta, CancellationToken token)
 {
     int winner = CheckWinner(board);
-    if (winner != 0)
-    {
-        return winner * depth;
-    }
-    if (depth == 0)
-    {
-        return 0;
-    }
+    if (winner == 1) return int.MaxValue; // player wins
+    else if (winner == -1) return int.MinValue; // opponent wins
+    else if (winner == 2) return 0; // draw
 
-    int bestScore = isMaximizingPlayer ? int.MinValue : int.MaxValue;
+    if (depth == 0 || token.IsCancellationRequested)
+        return EvaluateBoard(board, player);
+
+    int bestScore = player == 1 ? int.MinValue : int.MaxValue;
+    int bestMove = -1;
+
     for (int i = 0; i < board.GetLength(0); i++)
     {
         for (int j = 0; j < board.GetLength(1); j++)
         {
             if (board[i, j] == 0)
             {
-                int score = 0;
-                if (isMaximizingPlayer)
+                board[i, j] = player;
+                int score = BestMove(board, depth - 1, -player, alpha, beta, token);
+                board[i, j] = 0;
+                if (player == 1 && score > bestScore)
                 {
-                    board[i, j] = 1;
-                    score = Minimax(board, depth - 1, alpha, beta, false, token);
-                    board[i, j] = 0;
-                    bestScore = Math.Max(bestScore, score);
-                    alpha = Math.Max(alpha, score);
+                    bestScore = score;
+                    bestMove = i;
                 }
-                else
+                else if (player == -1 && score < bestScore)
                 {
-                    board[i, j] = -1;
-                    score = Minimax(board, depth - 1, alpha, beta, true, token);
-                    board[i, j] = 0;
-                    bestScore = Math.Min(bestScore, score);
-                    beta = Math.Min(beta, score);
+                    bestScore = score;
+                    bestMove = i;
                 }
-
-                if (beta <= alpha)
-                {
-                    return bestScore;
-                }
-
-                if (token.IsCancellationRequested)
-                {
-                    // Complete the current layer before throwing OperationCanceledException
-                    while (i < board.GetLength(0) && j < board.GetLength(1))
-                    {
-                        j++;
-                        if (j >= board.GetLength(1))
-                        {
-                            i++;
-                            j = 0;
-                        }
-                        if (board[i, j] == 0)
-                        {
-                            throw new OperationCanceledException();
-                        }
-                    }
-                }
+                if (player == 1) alpha = Math.Max(alpha, bestScore);
+                else beta = Math.Min(beta, bestScore);
+                if (beta <= alpha) break; // beta cutoff
             }
         }
+        if (token.IsCancellationRequested) break;
     }
 
-    return bestScore;
+    if (bestMove == -1) bestMove = 0;
+    return bestMove;
+}
+
+public int EvaluateBoard(int[,] board, int player)
+{
+    // Evaluate the score of the current board
+}
+
+public int CheckWinner(int[,] board)
+{
+    // Check if there is a winner and return the player who won
 }
